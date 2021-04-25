@@ -83,21 +83,13 @@ print('True class: %s' % class_names[X.target[idx]])
 #The explanation is presented below as a list of weighted features.
 exp.as_list()
 
-#These weighted features are a linear model, which approximates the behaviour of the random forest classifier 
-#in the vicinity of the test example. Roughly, if we remove 'Posting' and 'Host' from the document , 
-#the prediction should move towards the opposite class (Christianity) by about 0.27 
-#(the sum of the weights for both features). Let's see if this is the case.
+
 print('Original prediction:', est.predict_proba(y[idx])[0,1])
 tmp = y[idx].copy()
-#tmp[0,vectorizer.vocabulary_['Posting']] = 0
-#tmp[0,vectorizer.vocabulary_['Host']] = 0
+
 print('Prediction removing some features:', est.predict_proba(tmp)[0,1])
 print('Difference:', est.predict_proba(tmp)[0,1] - est.predict_proba(y[idx])[0,1])
 
-#Pretty close!
-#The words that explain the model around this document seem very arbitrary - not much to do with 
-#either Christianity or Atheism.
-#In fact, these are words that appear in the email headers (you will see this clearly soon), 
 
 #VISUALIZING EXPLANATIONS
 #%matplotlib inline
