@@ -12,6 +12,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
 
 RANDOM_SEED=42
 
@@ -69,26 +70,31 @@ print(f"Relevant columns are: {', '.join(relevant_columns)}")
 
 
 class_names = ['1', '0']
-from lime.lime_text import LimeTextExplainer
-explainer = LimeTextExplainer(class_names=class_names)
+import lime.lime_tabular
+#from lime.lime_text import LimeTabularExplainer
 
-#We then generate an explanation with at most 6 features for an arbitrary document in the test set.
-idx = 83
-exp = explainer.explain_instance(X_features.data[idx], est.predict_proba, num_features=6)
-print('Document id: %d' % idx)
-print('Probability(stroke) =', est.predict_proba([X.data[idx]])[0,1])
-print('True class: %s' % class_names[X.target[idx]])
+explainer = lime.lime_tabular.LimeTabularExplainer(X, mode= 'classification',feature_names = X_features, 
+                                                   class_names=class_names)
+#explainer = LimeTextExplainer(class_names=class_names)
 
-#The classifier got this example right (it predicted atheism).
-#The explanation is presented below as a list of weighted features.
+
+#idx = 83
+i = np.random.randint(0, X.shape[0])
+exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=1)
+#exp = explainer.explain_instance(X[idx], est.predict_proba, num_features=3)
+print('Document id: %d' % i)
+print('Probability(stroke) =', est.predict_proba([X[i]])[0,1])
+print('True class: %s' % class_names[y[i]])
+
+
 exp.as_list()
 
 
-print('Original prediction:', est.predict_proba(y[idx])[0,1])
-tmp = y[idx].copy()
+print('Original prediction:', est.predict_proba(y[i])[0,1])
+tmp = y[i].copy()
 
 print('Prediction removing some features:', est.predict_proba(tmp)[0,1])
-print('Difference:', est.predict_proba(tmp)[0,1] - est.predict_proba(y[idx])[0,1])
+print('Difference:', est.predict_proba(tmp)[0,1] - est.predict_proba(y[i])[0,1])
 
 
 #VISUALIZING EXPLANATIONS
