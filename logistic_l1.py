@@ -30,7 +30,7 @@ X = dataset.drop(['id'], axis=1).iloc[:, :-1]
 y = dataset.iloc[:, -1].values
 # print(np.unique(y, return_counts=True)) # count number of 0s and 1s
 
-# Remove 'Other' gender for easining the interpretation of results
+# Remove 'Other' gender for easining the interpretation of results 
 dataset = dataset.loc[dataset['gender'] != 'Other', :]
 
 # Careful, this should be reviewed for each dataset
@@ -68,44 +68,49 @@ print(f"Relevant columns are: {', '.join(relevant_columns)}")
 # Busca explicaciones en las que aparezcan variables distintas a estas tres.
 # Usa X e y como datos (los nombres de las columnas estan en X_features), est  es el clasificador final
 
-
-class_names = ['1', '0']
 import lime.lime_tabular
 #from lime.lime_text import LimeTabularExplainer
-
-explainer = lime.lime_tabular.LimeTabularExplainer(X, mode= 'classification',feature_names = X_features, 
-                                                   class_names=class_names)
-#explainer = LimeTextExplainer(class_names=class_names)
-
-
-#idx = 83
-i = np.random.randint(0, X.shape[0])
-exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=1)
-#exp = explainer.explain_instance(X[idx], est.predict_proba, num_features=3)
-print('Document id: %d' % i)
-print('Probability(stroke) =', est.predict_proba([X[i]])[0,1])
-print('True class: %s' % class_names[y[i]])
+class_names=['healthy','stroke']
+X= np.asarray(X)
+explainer = lime.lime_tabular.LimeTabularExplainer(X, feature_names = list(X_features), 
+                                                  class_names=class_names,
+                                                  categorical_features=range(X_cat.shape[1]),
+                                                  discretize_continuous=True)
+#import matplotlib
+import matplotlib.pyplot as plt
 
 
-exp.as_list()
+for i in range(len(dataset)):
+    exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=1)#num features es tres 
+#porque es realemente lo que queremos, lo que se sabemos que son importantes.
+
+    print('Document id: %d' % i)
+    print('Probability(stroke) =', est.predict_proba([X[i]])[0,1])
+    print('True class: %s' % class_names[y[i]])
+
+    exp.as_list()
+    
+    #
+    #print('Original prediction:', est.predict_proba(y[i])[0,1])
+    #tmp = y[i].copy()
+    #
+    #print('Prediction removing some features:', est.predict_proba(tmp)[0,1])
+    #print('Difference:', est.predict_proba(tmp)[0,1] - est.predict_proba(y[i])[0,1])
 
 
-print('Original prediction:', est.predict_proba(y[i])[0,1])
-tmp = y[i].copy()
-
-print('Prediction removing some features:', est.predict_proba(tmp)[0,1])
-print('Difference:', est.predict_proba(tmp)[0,1] - est.predict_proba(y[i])[0,1])
-
-
-#VISUALIZING EXPLANATIONS
-#%matplotlib inline
-fig = exp.as_pyplot_figure()
-exp.show_in_notebook(text=False)
-exp.save_to_file('/Users/mariapalacios/Desktop/TFG/oi.html')
-exp.show_in_notebook(text=True)
-
-
-
-
-
-
+    #VISUALIZING EXPLANATIONS
+    fig = exp.as_pyplot_figure()
+    plt.subplots_adjust(left=0.35)
+    fig.show()
+    
+    
+    
+#exp.show_in_notebook(text=False)
+exp.save_to_file('/Users/mariapalacios/Desktop/TFG/oiStroke.html')
+exp.show_in_notebook()
+    
+    
+    
+    
+    
+    

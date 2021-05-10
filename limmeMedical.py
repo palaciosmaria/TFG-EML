@@ -21,7 +21,7 @@ dataset= pd.read_csv("/Users/mariapalacios/Desktop/TFG/datasets/healthcare-datas
 dataset.head()
 
 X = dataset.iloc[:, :-1].values
-y = dataset.iloc[:, -1].values
+y = dataset.iloc[:, -1].values# -1 por que lo que queremos predecir está en la última columna
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 1/3, random_state = 0)
 
@@ -33,11 +33,11 @@ class_names = ['1', '0']
 
 clf = LogisticRegression(random_state=0,penalty='l1')
 #rf = sklearn.ensemble.RandomForestClassifier(n_estimators=500)
-clf.fit(X_train, y_train)
+clf.fit(X_train, y_train)# esto está bien (TINO)
 print(clf)
 
-pred = clf.predict(X_test)
-print(sklearn.metrics.f1_score(y_test, pred, average='binary'))
+pred = clf.predict(X_test)# esto está bien (TINO)
+print(sklearn.metrics.f1_score(y_test, pred, average='binary'))# esto está bien (TINO), y_test porque es lo que quiero predecir
 #
 #from lime import lime_text
 #from sklearn.pipeline import make_pipeline
