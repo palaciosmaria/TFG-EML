@@ -108,3 +108,5 @@ for i in range(len(dataset)):
         fig = exp.as_pyplot_figure()
         plt.subplots_adjust(left=0.35)
         fig.show()
+        
+        
