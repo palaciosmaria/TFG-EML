@@ -80,16 +80,27 @@ explainer = lime.lime_tabular.LimeTabularExplainer(X, feature_names = list(X_fea
 import matplotlib.pyplot as plt
 
 
-for i in range(len(dataset)):
-    exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=1)#num features es tres 
+
+i =5108
+#for i in range(len(dataset)):
+exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=len(X_features))#num features es tres 
 #porque es realemente lo que queremos, lo que se sabemos que son importantes.
 
-    print('Document id: %d' % i)
-    print('Probability(stroke) =', est.predict_proba([X[i]])[0,1])
-    print('True class: %s' % class_names[y[i]])
+print('Document id: %d' % i)
+print('Probability(stroke) =', est.predict_proba([X[i]])[0,1])
+print('True class: %s' % class_names[y[i]])
 
-    exp.as_list()
-    
+#exp.as_list()
+#posicion=exp.as_list()[0]
+#primero=posicion[0].index('<')
+#segundo=posicion[0].index('<=')
+#first_feature=posicion[0][primero+1:segundo]
+#posicion=exp.as_list()[1]
+#primero=posicion[0].index('>')
+#second_feature=posicion[0][0:primero]
+#posicion=exp.as_list()[2]
+#primero=posicion[0].index('>')
+#second_feature=posicion[0][0:primero]
     #
     #print('Original prediction:', est.predict_proba(y[i])[0,1])
     #tmp = y[i].copy()
@@ -97,17 +108,23 @@ for i in range(len(dataset)):
     #print('Prediction removing some features:', est.predict_proba(tmp)[0,1])
     #print('Difference:', est.predict_proba(tmp)[0,1] - est.predict_proba(y[i])[0,1])
 
-
     #VISUALIZING EXPLANATIONS
-    fig = exp.as_pyplot_figure()
-    plt.subplots_adjust(left=0.35)
-    fig.show()
+fig = exp.as_pyplot_figure()
+plt.subplots_adjust(left=0.35)
+fig.show()
+    
+    #if (relevant_columns!= exp.)
     
     
+
     
-#exp.show_in_notebook(text=False)
-exp.save_to_file('/Users/mariapalacios/Desktop/TFG/oiStroke.html')
-exp.show_in_notebook()
+
+#exp.save_to_file('/Users/mariapalacios/Desktop/TFG/oiStroke.html')
+#exp.show_in_notebook(show_table=True)
+    
+
+
+
     
     
     
