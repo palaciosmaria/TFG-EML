@@ -82,6 +82,7 @@ import matplotlib.pyplot as plt
 def is_column_in_explanations(column_name, explanations):
     return any([column_name in explanation for explanation in explanations])
 
+
 correct_explanations=0
 correct_columns=0
 prediction='healthy'
@@ -91,6 +92,7 @@ for i in range(len(dataset)):
     exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=len(X_features))#num features es tres
     #porque es realemente lo que queremos, lo que se sabemos que son importantes.
     explanations = [explanation for (explanation, _) in exp.as_list()]
+
     
      #prediction de tener un stroke es true (stroke) si su probabilidad es >50%
 
@@ -147,3 +149,5 @@ for i in range(len(dataset)):
        
 percentage_total_correct_explanations=correct_explanations/len(dataset)
 percentage_total_correct_columns=correct_columns/(len(dataset)*3)
+
+
