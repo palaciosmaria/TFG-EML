@@ -109,7 +109,7 @@ for i in range(len(dataset)):
     else:
         correct_prediction=False
 
-    while (correct_prediction==True):
+    while (correct_prediction!=True):
         are_columns_present = []
         for column_name in relevant_columns:
                 are_columns_present.append(
