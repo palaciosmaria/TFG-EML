@@ -82,31 +82,68 @@ import matplotlib.pyplot as plt
 def is_column_in_explanations(column_name, explanations):
     return any([column_name in explanation for explanation in explanations])
 
+correct_explanations=0
+correct_columns=0
+prediction='healthy'
+
+
 for i in range(len(dataset)):
     exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=len(X_features))#num features es tres
     #porque es realemente lo que queremos, lo que se sabemos que son importantes.
     explanations = [explanation for (explanation, _) in exp.as_list()]
+    
+     #prediction de tener un stroke es true (stroke) si su probabilidad es >50%
 
-    are_columns_present = []
-    for column_name in relevant_columns:
-        are_columns_present.append(
-            is_column_in_explanations(column_name, explanations)
-        )
-    # convert to array to permit vectorial operations
-    are_columns_present = np.array(are_columns_present)
-    columns_correctly_retrieved = np.sum(are_columns_present)
-
-    if not all(are_columns_present):
-        missing_columns = relevant_columns[np.where(are_columns_present == False)[0]]
-        print("*************************************************************")
-        print('Document id: %d' % i)
-        print('Probability(stroke) =', est.predict_proba([X[i]])[0, 1])
-        print('True class: %s' % class_names[y[i]])
-        print(f"Example {i}: missing columns are {','.join(missing_columns)}")
-        print("*************************************************************")
-
-        fig = exp.as_pyplot_figure()
-        plt.subplots_adjust(left=0.35)
-        fig.show()
+    correct_prediction=True
+    if (est.predict_proba([X[i]])[0, 1] ) >= 0.5:
+        prediction='stroke'
+    else:
+        prediction='healthy'
         
+    if (prediction=='healthy') and (class_names[y[i]]=='healthy'):
+        correct_prediction=True
+    elif (prediction=='stroke') and (class_names[y[i]]=='stroke'):
+        correct_prediction=True
+    else:
+        correct_prediction=False
+
+    while (correct_prediction==True):
+        are_columns_present = []
+        for column_name in relevant_columns:
+                are_columns_present.append(
+                    is_column_in_explanations(column_name, explanations)
+                )
+            
         
+        # convert to array to permit vectorial operations
+        are_columns_present = np.array(are_columns_present)
+        columns_correctly_retrieved = np.sum(are_columns_present)
+        
+         #columns correctly retrieved son las veces que estan bmi, average glucose level y age en las explicaciones
+        correct_columns=correct_columns+columns_correctly_retrieved
+        
+        if columns_correctly_retrieved == 3:
+            correct_explanations=correct_explanations+1
+        
+        if not all(are_columns_present):
+            missing_columns = relevant_columns[np.where(are_columns_present == False)[0]]
+            print("*************************************************************")
+            print('Document id: %d' % i)
+            print('Probability(stroke) =', est.predict_proba([X[i]])[0, 1])
+            print('True class: %s' % class_names[y[i]])
+            if (prediction=='healthy') and (class_names[y[i]]=='healthy'):
+                print('Prediction is correct')
+            elif (prediction=='stroke') and (class_names[y[i]]=='stroke'):
+                print('Prediction is correct')
+            else:
+                print('Prediction is wrong')
+            print(f"Example {i}: missing columns are {','.join(missing_columns)}")
+            print("*************************************************************")
+    
+            fig = exp.as_pyplot_figure()
+            plt.subplots_adjust(left=0.35)
+            fig.show()
+        break
+       
+percentage_total_correct_explanations=correct_explanations/len(dataset)
+percentage_total_correct_columns=correct_columns/(len(dataset)*3)
