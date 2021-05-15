@@ -86,7 +86,8 @@ def is_column_in_explanations(column_name, explanations):
 correct_explanations=0
 correct_columns=0
 prediction='healthy'
-
+counter_correct_predictions=0
+counter_incorrect_predictions=0
 
 for i in range(len(dataset)):
     exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=len(X_features))#num features es tres
@@ -104,10 +105,13 @@ for i in range(len(dataset)):
         
     if (prediction=='healthy') and (class_names[y[i]]=='healthy'):
         correct_prediction=True
+        counter_correct_predictions=counter_correct_predictions+1
     elif (prediction=='stroke') and (class_names[y[i]]=='stroke'):
+        counter_correct_predictions=counter_correct_predictions+1
         correct_prediction=True
     else:
         correct_prediction=False
+        counter_incorrect_predictions=counter_incorrect_predictions+1
 
     while (correct_prediction!=True):
         are_columns_present = []
@@ -149,5 +153,6 @@ for i in range(len(dataset)):
        
 percentage_total_correct_explanations=correct_explanations/len(dataset)
 percentage_total_correct_columns=correct_columns/(len(dataset)*3)
-
+percentage_total_correct_explanations_and_correct_predictions=correct_explanations/counter_correct_predictions
+percentage_total_correct_explanations_and_incorrect_predictions=correct_explanations/counter_incorrect_predictions
 
