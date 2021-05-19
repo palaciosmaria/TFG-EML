@@ -38,7 +38,7 @@ print(classification_report(y, est.predict(X)))
 
 import lime.lime_tabular
 #from lime.lime_text import LimeTabularExplainer
-class_names=['healthy','heart_failure']
+class_names=['no_diabetes','diabetes']
 X= np.asarray(X)
 explainer = lime.lime_tabular.LimeTabularExplainer(X, feature_names = list(X_features), 
                                                   class_names=class_names,
@@ -65,7 +65,7 @@ counter_correct_predictions=0
 counter_incorrect_predictions=0
 
 for i in range(len(dataset)):
-    exp = explainer.explain_instance(X[i], est.predict_proba, num_features=2, top_labels=len(X_features))#num features es tres
+    exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=len(X_features))#num features es tres
     #porque es realemente lo que queremos, lo que se sabemos que son importantes.
     explanations = [explanation for (explanation, _) in exp.as_list()]
 
