@@ -34,6 +34,7 @@ sparsity_l1 = np.mean(coefs == 0) * 100
 print(f"C={C}")
 print(f"Sparsity with L1 penalty: {sparsity_l1} ({np.sum(coefs != 0)} / {len(coefs)} columns)")
 print(f"Relevant columns are: {', '.join(relevant_columns)}")
+print('Classification summary:')
 print(classification_report(y, est.predict(X)))
 
 import lime.lime_tabular
