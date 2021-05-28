@@ -77,30 +77,27 @@ import numpy as np
 #import dalex as dx
 import shap
 
-i=20
+i=2500
 
+X=np.array(X)
 #SHAP EXPLAINER
-explainer = shap.Explainer(est, X, feature_names=X_features)
-shap_values = explainer(X)# Estima los valores de shaply en el conjunto de datos de prueba
-shap.summary_plot(shap_values, X)
-shap.plots.beeswarm(shap_values)
-
+explainer = shap.LinearExplainer(est, X)
+shap_values = explainer.shap_values(X)# Estima los valores de shaply en el conjunto de datos de prueba
+#explicaciones globales
+shap.summary_plot(shap_values, X, feature_names=X_features)
 #Lo de forzar es para casos indivuduales
-shap.plots.force(shap_values[i])
-
-shap.dependence_plot("Age", shap_values, X)
-shap.dependence_plot("Avg_glucose_level", shap_values, X)
-shap.dependence_plot("BMI", shap_values, X)
+shap.force_plot(explainer.expected_value,shap_values[i,:], X[i,:], feature_names=X_features, matplotlib=True)
 
 
-ex = shap.KernelExplainer(est.predict, X)
-shap_values = ex.shap_values(X.iloc[0,:])
-shap.force_plot(ex.expected_value, shap_values, X.iloc[0,:])
+##shap.dependence_plot("age", shap_values, X)
+##shap.dependence_plot("avg_glucose_level", shap_values, X)
+##shap.dependence_plot("BMI", shap_values, X)
 
 
-#DALEX EXPLAINER???
-#exp_gbm = dx.Explainer(est, data=X, y=y, predict_function=est.predict(dataset), label='gbm')
-#pp = exp_gbm.predict_parts(X.iloc[[1]], type='shap_wrapper', shap_explainer_type="TreeExplainer")
+
+##DALEX EXPLAINER???
+#exp_gbm = dx.Explainer(est, data=X, y=y, predict_function=est.predict(X), label='gbm')
+#pp = exp_gbm.predict_parts(X.iloc[[i]], type='shap_wrapper', shap_explainer_type="TreeExplainer")
 #type(pp)
 #pp.plot()
 #pp.result  # shap_values
