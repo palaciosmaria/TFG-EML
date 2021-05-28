@@ -80,14 +80,17 @@ import shap
 i=2500
 
 X=np.array(X)
+X_features=np.array(X_features)
 #SHAP EXPLAINER
 explainer = shap.LinearExplainer(est, X)
 shap_values = explainer.shap_values(X)# Estima los valores de shaply en el conjunto de datos de prueba
 #explicaciones globales
 shap.summary_plot(shap_values, X, feature_names=X_features)
-#Lo de forzar es para casos indivuduales
+#Lo de forzar es para casos individuales
 shap.force_plot(explainer.expected_value,shap_values[i,:], X[i,:], feature_names=X_features, matplotlib=True)
-
+shap.plots._waterfall.waterfall_legacy(explainer.expected_value, shap_values[i,:], X[i,:], feature_names=X_features)
+shap.plots.bar(explainer(X))#??? no salen los nombres de las features
+shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
 
 ##shap.dependence_plot("age", shap_values, X)
 ##shap.dependence_plot("avg_glucose_level", shap_values, X)
