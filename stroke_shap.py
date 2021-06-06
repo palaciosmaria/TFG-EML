@@ -77,8 +77,9 @@ import numpy as np
 #import dalex as dx
 import shap
 
-i=2500
-
+i=45
+class_names=['healthy','stroke']
+print(X[i].mean)
 X=np.array(X)
 X_features=np.array(X_features)
 #SHAP EXPLAINER
@@ -87,25 +88,12 @@ shap_values = explainer.shap_values(X)# Estima los valores de shaply en el conju
 #explicaciones globales
 shap.summary_plot(shap_values, X, feature_names=X_features)
 #Lo de forzar es para casos individuales
+print("*************************************************************")
+print('Document id: %d' % i)
+print('Probability(stroke) =', est.predict_proba([X[i]])[0, 1])
+print('True class: %s' % class_names[y[i]])
+print("*************************************************************")
 shap.force_plot(explainer.expected_value,shap_values[i,:], X[i,:], feature_names=X_features, matplotlib=True)
 shap.plots._waterfall.waterfall_legacy(explainer.expected_value, shap_values[i,:], X[i,:], feature_names=X_features)
-shap.plots.bar(explainer(X))#??? no salen los nombres de las features
 shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
 
-##shap.dependence_plot("age", shap_values, X)
-##shap.dependence_plot("avg_glucose_level", shap_values, X)
-##shap.dependence_plot("BMI", shap_values, X)
-
-
-
-##DALEX EXPLAINER???
-#exp_gbm = dx.Explainer(est, data=X, y=y, predict_function=est.predict(X), label='gbm')
-#pp = exp_gbm.predict_parts(X.iloc[[i]], type='shap_wrapper', shap_explainer_type="TreeExplainer")
-#type(pp)
-#pp.plot()
-#pp.result  # shap_values
-#mp = exp_gbm.model_parts(type='shap_wrapper', shap_explainer_type="TreeExplainer")
-#type(mp)
-#mp.plot()
-#mp.plot(plot_type='bar')
-#mp.result  # shap_values

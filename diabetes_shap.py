@@ -52,5 +52,4 @@ shap.summary_plot(shap_values, X, feature_names=X_features)
 #Lo de forzar es para casos individuales
 shap.force_plot(explainer.expected_value,shap_values[i,:], X[i,:], feature_names=X_features, matplotlib=True)
 shap.plots._waterfall.waterfall_legacy(explainer.expected_value, shap_values[i,:], X[i,:], feature_names=X_features)
-shap.plots.bar(explainer(X))#??? no salen los nombres de las features
 shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
