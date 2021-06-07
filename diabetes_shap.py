@@ -41,15 +41,22 @@ print(classification_report(y, est.predict(X)))
 
 import shap
 
-i=250
+i=556
+class_names=['no_diabetes','diabetes']
 X=np.array(X)
 X_features=np.array(X_features)
+
 #SHAP EXPLAINER
 explainer = shap.LinearExplainer(est, X)
 shap_values = explainer.shap_values(X)# Estima los valores de shaply en el conjunto de datos de prueba
 #explicaciones globales
-shap.summary_plot(shap_values, X, feature_names=X_features)
+#shap.summary_plot(shap_values, X, feature_names=X_features)
 #Lo de forzar es para casos individuales
+print("*************************************************************")
+print('Document id: %d' % i)
+print('Probability(diabetes) =', est.predict_proba([X[i]])[0, 1])
+print('True class: %s' % class_names[y[i]])
+print("*************************************************************")
 shap.force_plot(explainer.expected_value,shap_values[i,:], X[i,:], feature_names=X_features, matplotlib=True)
 shap.plots._waterfall.waterfall_legacy(explainer.expected_value, shap_values[i,:], X[i,:], feature_names=X_features)
-shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
+#shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)

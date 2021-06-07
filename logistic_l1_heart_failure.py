@@ -45,7 +45,7 @@ X_cat = oh_enc.fit_transform(X[categorical_idx]).todense()
 X = np.concatenate([X_cat, X_numerical], axis=1)
 X_features = np.concatenate([oh_enc.get_feature_names(), numerical_idx])
 
-C = 0.25
+C = 0.025
 est = LogisticRegression(penalty='l1', C=C, random_state=RANDOM_SEED, solver='saga', max_iter=1000,
                          class_weight='balanced')
 est.fit(X, y)

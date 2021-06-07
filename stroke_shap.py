@@ -77,16 +77,17 @@ import numpy as np
 #import dalex as dx
 import shap
 
-i=45
+i=99
 class_names=['healthy','stroke']
-print(X[i].mean)
+#print(X[i].mean)
 X=np.array(X)
 X_features=np.array(X_features)
 #SHAP EXPLAINER
-explainer = shap.LinearExplainer(est, X)
+#explainer = shap.LinearExplainer(est, X)
+explainer = shap.KernelExplainer(est.predict, X[0:2,:])
 shap_values = explainer.shap_values(X)# Estima los valores de shaply en el conjunto de datos de prueba
 #explicaciones globales
-shap.summary_plot(shap_values, X, feature_names=X_features)
+#shap.summary_plot(shap_values, X, feature_names=X_features)
 #Lo de forzar es para casos individuales
 print("*************************************************************")
 print('Document id: %d' % i)
@@ -95,5 +96,5 @@ print('True class: %s' % class_names[y[i]])
 print("*************************************************************")
 shap.force_plot(explainer.expected_value,shap_values[i,:], X[i,:], feature_names=X_features, matplotlib=True)
 shap.plots._waterfall.waterfall_legacy(explainer.expected_value, shap_values[i,:], X[i,:], feature_names=X_features)
-shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
+#shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
 
