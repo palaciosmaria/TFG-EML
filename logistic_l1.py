@@ -77,8 +77,6 @@ explainer = lime.lime_tabular.LimeTabularExplainer(X, feature_names = list(X_fea
                                                   class_names=class_names,
                                                   categorical_features=range(X_cat.shape[1]),
                                                   discretize_continuous=True)
-#import matplotlib
-import matplotlib.pyplot as plt
 
 
 def is_column_in_explanations(column_name, explanations):
@@ -93,7 +91,6 @@ counter_columns_correct_predictions=0
 counter_columns_incorrect_predictions=0
 
 correct_columns=0
-prediction='healthy'
 counter_correct_predictions=0
 counter_incorrect_predictions=0
 
