@@ -84,7 +84,7 @@ X=np.array(X)
 X_features=np.array(X_features)
 #SHAP EXPLAINER
 #explainer = shap.LinearExplainer(est, X)
-explainer = shap.KernelExplainer(est.predict, X[0:2,:])
+explainer = shap.KernelExplainer(est.predict, shap.kmeans(X, 100))
 shap_values = explainer.shap_values(X)# Estima los valores de shaply en el conjunto de datos de prueba
 #explicaciones globales
 #shap.summary_plot(shap_values, X, feature_names=X_features)
