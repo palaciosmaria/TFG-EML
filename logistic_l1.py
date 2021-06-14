@@ -8,12 +8,11 @@ Created on Tue Apr 20 11:05:43 2021
 import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LogisticRegression
+
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import classification_report
-from sklearn.model_selection import train_test_split
 
-RANDOM_SEED=42
+
 
 # No uses rutas absolutas (solo funcionan en tu ordenador), usa rutas relativas
 dataset = pd.read_csv("datasets/healthcare-dataset-stroke-data.csv")
@@ -49,11 +48,15 @@ X_cat = oh_enc.fit_transform(X[categorical_idx]).todense()
 X = np.concatenate([X_cat, X_numerical], axis=1)
 X_features = np.concatenate([oh_enc.get_feature_names(), numerical_idx])
 
+from sklearn.linear_model import LogisticRegression
 
 C = 0.001
-est = LogisticRegression(penalty='l1', C=C, random_state=RANDOM_SEED, solver='saga', max_iter=1000,
+RANDOM_SEED=42
+est = LogisticRegression(penalty='l1', C=C, random_state=RANDOM_SEED, 
+                         solver='saga', max_iter=1000, 
                          class_weight='balanced')
 est.fit(X, y)
+
 coefs = est.coef_.ravel()
 relevant_columns = X_features[coefs != 0]
 sparsity_l1 = np.mean(coefs == 0) * 100
@@ -62,8 +65,7 @@ print(f"Sparsity with L1 penalty: {sparsity_l1} ({np.sum(coefs != 0)} / {len(coe
 print(f"Relevant columns are: {', '.join(relevant_columns)}")
 print('Classification summary:')
 print(classification_report(y, est.predict(X)))
-# print('Classification summary:')
-# print(classification_report(y, est.predict(X)))
+
 
 # El clasificador base solo usa age, avg_glucose_level, bmi
 # Busca explicaciones en las que aparezcan variables distintas a estas tres.

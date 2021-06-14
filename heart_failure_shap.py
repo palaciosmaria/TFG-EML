@@ -74,8 +74,18 @@ X_features=np.array(X_features)
 #shap_values = explainer.shap_values(X)# Estima los valores de shaply en el conjunto de datos de prueba
 
 import pickle
-with open('heart_failure-shap.pkl', 'rb') as fd:
+with open('heart_failure-shap_2.pkl', 'rb') as fd:
     [explainer, shap_values] = pickle.load(fd)
+
+
+inds_EF = shap.approximate_interactions(12, shap_values, X)
+inds_SC = shap.approximate_interactions(14, shap_values, X)
+for i in range(2):
+    shap.dependence_plot(12, shap_values, X, feature_names=X_features, interaction_index=inds_EF[i])#ejection fraction
+    shap.dependence_plot(14, shap_values, X, feature_names=X_features, interaction_index=inds_SC[i])#serum creatinine
+    
+#shap.dependence_plot(12, shap_values, X, feature_names=X_features, interaction_index=13)
+#shap.dependence_plot(14, shap_values, X, feature_names=X_features, interaction_index=10)
 
 shap.summary_plot(shap_values, X, feature_names=X_features)
 #shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)

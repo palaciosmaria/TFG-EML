@@ -90,8 +90,21 @@ with open('shap_values.pkl', 'rb') as fd:
 # a set of weighted kmeans, each weighted by the number of points they represent.
 #explainer = shap.KernelExplainer(est.predict, shap.kmeans(X, 100))
 #shap_values = explainer.shap_values(X)# Estima los valores de shaply en el conjunto de datos de prueba
+    
+# we can use shap.approximate_interactions to guess which features
+# may interact with age
+inds_age = shap.approximate_interactions(20, shap_values, X)
+inds_avg_glucose_level = shap.approximate_interactions(21, shap_values, X)
+inds_bmi = shap.approximate_interactions(22, shap_values, X)
 shap.summary_plot(shap_values, X, feature_names=X_features)
+for i in range(2):
+    shap.dependence_plot(20, shap_values, X, feature_names=X_features, interaction_index=inds_age[i])#age
+    
+shap.dependence_plot(21, shap_values, X, feature_names=X_features, interaction_index=22)#average glucose level
+shap.dependence_plot(22, shap_values, X, feature_names=X_features, interaction_index=20)#bmi
 #shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
+
+
 
 correct_explanation=0
 incorrect_explanation=0

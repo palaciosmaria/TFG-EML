@@ -53,6 +53,17 @@ import pickle
 with open('diabetes-shap.pkl', 'rb') as fd:
     [explainer, shap_values] = pickle.load(fd)
 
+
+inds_glucose = shap.approximate_interactions(1, shap_values, X)
+inds_pregnancies = shap.approximate_interactions(0, shap_values, X)
+inds_bmi = shap.approximate_interactions(5, shap_values, X)
+for i in range(2):
+    shap.dependence_plot(1, shap_values, X, feature_names=X_features, interaction_index=inds_glucose[i])
+    shap.dependence_plot(0, shap_values, X, feature_names=X_features, interaction_index=inds_pregnancies[i])
+    shap.dependence_plot(5, shap_values, X, feature_names=X_features, interaction_index=inds_bmi[i])
+#shap.dependence_plot(21, shap_values, X, feature_names=X_features, interaction_index=22)#average glucose level
+#shap.dependence_plot(22, shap_values, X, feature_names=X_features, interaction_index=20)#bmi
+
 shap.summary_plot(shap_values, X, feature_names=X_features)
 #shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
 

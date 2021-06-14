@@ -12,7 +12,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
 
-from sklearn.impute import SimpleImputer
+
 from sklearn.preprocessing import OneHotEncoder
 
 RANDOM_SEED=42
@@ -67,9 +67,6 @@ explainer = lime.lime_tabular.LimeTabularExplainer(X, feature_names = list(X_fea
                                                   class_names=class_names,
                                                   categorical_features=range(X_cat.shape[1]),
                                                   discretize_continuous=True)
-#import matplotlib
-import matplotlib.pyplot as plt
-
 
 def is_column_in_explanations(column_name, explanations):
     return any([column_name in explanation for explanation in explanations])
@@ -89,7 +86,7 @@ counter_incorrect_predictions=0
 
 i=113
 #for i in range(len(dataset)):
-exp = explainer.explain_instance(X[i], est.predict_proba, num_features=11, top_labels=len(X_features))#num features es tres
+exp = explainer.explain_instance(X[i], est.predict_proba, num_features=2, top_labels=len(X_features))#num features es tres
 #porque es realemente lo que queremos, lo que se sabemos que son importantes.
 explanations = [explanation for (explanation, _) in exp.as_list()]
 

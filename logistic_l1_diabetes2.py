@@ -45,8 +45,6 @@ X= np.asarray(X)
 explainer = lime.lime_tabular.LimeTabularExplainer(X, feature_names = list(X_features), 
                                                   class_names=class_names,
                                                   discretize_continuous=True)
-#import matplotlib
-import matplotlib.pyplot as plt
 
 
 def is_column_in_explanations(column_name, explanations):
