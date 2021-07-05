@@ -8,15 +8,12 @@ def generate_random_dataset(n=10000, n_useless=5):
     age_ = np.linspace(45, 90, 50)
     bmi_ = np.arange(17, 34)
 
-    def get_lky(age, bmi):
-        return (age - 65) / 10 + abs((bmi - 24) / 5.5)
-
     X_useless = [np.random.normal(size=n) for _ in range(n_useless)]
     X = np.column_stack([
          np.random.uniform(age_[0], age_[-1], size=n),
          np.random.uniform(bmi_[0], bmi_[-1], size=n)
     ] + X_useless)
-    y = (get_lky(X[:, 0], X[:, 1]) > 1.1).astype('int')
+    y = (np.logical_and(X[:, 0] > 65, X[:, 1] > 25)).astype('int')
     return X, y
 
 from statistics import mode
@@ -67,45 +64,30 @@ X, y = generate_random_dataset(n_useless=N_USELESS)
 # No te preocupes por el clasificador, simplemente úsalo como hasta ahora
 est = RandomForestClassifier()
 est.fit(X, y)
-class_names=['healthy','unhealthy']
-plot_decision_boundary(est, X[:1000], y[:1000])
-plt.xlabel('Age')
-plt.ylabel('BMI')
 
-# Generate a point with age 74 and bmi 24
-X_sim = generate_test_point(55,22, n_useless=N_USELESS)
+
+X_sim = generate_test_point(80,20, n_useless=N_USELESS)
 print(X_sim)
 
-print("*************************************************************")
-print('Test point: 74,24')
-print('Probability(diabetes) =', est.predict_proba([X_sim])[0, 1])
-print('True class: %s' % class_names[X_sim])
-print("*************************************************************")
 
-import lime.lime_tabular
-explainer = lime.lime_tabular.LimeTabularExplainer(X)
-exp = explainer.explain_instance(X_sim.flatten(), est.predict_proba)
-fig = exp.as_pyplot_figure()
-fig.show()
-#import shap
-#X=np.array(X)
-#explainer = shap.KernelExplainer(est.predict, shap.kmeans(X, 100))
-#shap_values = explainer.shap_values(X_sim)
-#shap.summary_plot(shap_values, X_sim)
-#shap.plots._waterfall.waterfall_legacy(explainer.expected_value, shap_values[0])
-# We can repeat for several data points
-#data = [
-#    (76, 24, 'k'), (65, 29, 'g'), (65, 30.5, 'g'), (70, 20.5, 'g'),
-#    (70, 21.5, 'g'), (50, 25, 'w'), (85, 32, 'w')
-#]
-#for age, bmi, color in data:
-#    X_sim = generate_test_point(age, bmi, n_useless=N_USELESS)
-#    plot_test_point(X_sim, c=color)
+#import lime.lime_tabular
+#explainer = lime.lime_tabular.LimeTabularExplainer(X)
+#exp = explainer.explain_instance(X_sim.flatten(), est.predict_proba)
+#fig = exp.as_pyplot_figure()
+
+import shap
+X=np.array(X)
+explainer = shap.KernelExplainer(est.predict, shap.kmeans(X, 100))
+shap_values = explainer.shap_values(X_sim)
+shap.summary_plot(shap_values, X_sim)
+shap.plots._waterfall.waterfall_legacy(explainer.expected_value, shap_values[0])
+
+
+
+plot_decision_boundary(est, X[:1000], y[:1000])
 #plt.show()
+plt.xlabel('Age')
+plt.ylabel('BMI')
+# plot it to check where does it fall...
+#plot_test_point(X_sim, c='k')
 
-
-#plot_decision_boundary(est, X[:1000], y[:1000])
-#plt.xlabel('Age')
-#plt.ylabel('BMI')
-## plot it to check where does it fall...
-##plot_test_point(X_sim, c='k')

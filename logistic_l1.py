@@ -86,6 +86,7 @@ def is_column_in_explanations(column_name, explanations):
 
 
 correct_explanations=0
+incorrect_explanations=0
 
 correct_explanations_incorrect_predictions=0
 correct_explanations_correct_predictions=0
@@ -148,7 +149,8 @@ if columns_correctly_retrieved == 3:
         correct_explanations_correct_predictions+=1
     else:
         correct_explanations_incorrect_predictions+=1
-    
+else: 
+        incorrect_explanations+=1   
 
 #if not all(are_columns_present):
 missing_columns = relevant_columns[np.where(are_columns_present == False)[0]]

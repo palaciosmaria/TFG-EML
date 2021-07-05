@@ -52,6 +52,7 @@ def is_column_in_explanations(column_name, explanations):
 
 
 correct_explanations=0
+incorrect_explanations=0
 
 correct_explanations_incorrect_predictions=0
 correct_explanations_correct_predictions=0
@@ -63,7 +64,7 @@ prediction='diabetes'
 counter_correct_predictions=0
 counter_incorrect_predictions=0
 
-i=66
+i=666
 #for i in range(len(dataset)):
 exp = explainer.explain_instance(X[i], est.predict_proba, num_features=3, top_labels=len(X_features))#num features es tres
 #porque es realemente lo que queremos, lo que se sabemos que son importantes.
@@ -77,7 +78,7 @@ if (est.predict_proba([X[i]])[0, 1] ) >= 0.5:
     prediction='diabetes'
 else:
     prediction='no_diabetes'
-    
+
 if (prediction=='no_diabetes') and (class_names[y[i]]=='no_diabetes'):
     correct_prediction=True
     counter_correct_predictions=counter_correct_predictions+1
@@ -91,9 +92,9 @@ else:
 #while (correct_prediction!=True):
 are_columns_present = []
 for column_name in relevant_columns:
-        are_columns_present.append(
-            is_column_in_explanations(column_name, explanations)
-        )
+    are_columns_present.append(
+        is_column_in_explanations(column_name, explanations)
+    )
    
 
 # convert to array to permit vectorial operations
@@ -104,18 +105,19 @@ columns_correctly_retrieved = np.sum(are_columns_present)
 correct_columns=correct_columns+columns_correctly_retrieved
 if correct_prediction:
     counter_columns_correct_predictions+=columns_correctly_retrieved
-    
+
 else:
     counter_columns_incorrect_predictions+=columns_correctly_retrieved
-    
+
 
 if columns_correctly_retrieved == 3:
-    correct_explanations=correct_explanations+1
-    if correct_prediction:
-        correct_explanations_correct_predictions+=1
-    else:
-        correct_explanations_incorrect_predictions+=1
-    
+        correct_explanations=correct_explanations+1
+        if correct_prediction:
+            correct_explanations_correct_predictions+=1
+        else:
+            correct_explanations_incorrect_predictions+=1
+else: 
+    incorrect_explanations+=1 
 
 #if not all(are_columns_present):
 missing_columns = relevant_columns[np.where(are_columns_present == False)[0]]
@@ -133,7 +135,6 @@ print(f"Example {i}: missing columns are {','.join(missing_columns)}")
 print("*************************************************************")
 
 fig = exp.as_pyplot_figure()
-#plt.subplots_adjust(left=0.35)
 fig.show()
 #break
 #        

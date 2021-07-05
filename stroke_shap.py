@@ -13,7 +13,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import classification_report
-from sklearn.model_selection import train_test_split
 
 RANDOM_SEED=42
 
@@ -93,16 +92,16 @@ with open('shap_values.pkl', 'rb') as fd:
     
 # we can use shap.approximate_interactions to guess which features
 # may interact with age
-inds_age = shap.approximate_interactions(20, shap_values, X)
-inds_avg_glucose_level = shap.approximate_interactions(21, shap_values, X)
-inds_bmi = shap.approximate_interactions(22, shap_values, X)
-shap.summary_plot(shap_values, X, feature_names=X_features)
-for i in range(2):
-    shap.dependence_plot(20, shap_values, X, feature_names=X_features, interaction_index=inds_age[i])#age
-    
-shap.dependence_plot(21, shap_values, X, feature_names=X_features, interaction_index=22)#average glucose level
-shap.dependence_plot(22, shap_values, X, feature_names=X_features, interaction_index=20)#bmi
-#shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
+#inds_age = shap.approximate_interactions(20, shap_values, X)
+#inds_avg_glucose_level = shap.approximate_interactions(21, shap_values, X)
+#inds_bmi = shap.approximate_interactions(22, shap_values, X)
+#shap.summary_plot(shap_values, X, feature_names=X_features)
+#for i in range(2):
+#    shap.dependence_plot(20, shap_values, X, feature_names=X_features, interaction_index=inds_age[i])#age
+#    
+#shap.dependence_plot(21, shap_values, X, feature_names=X_features, interaction_index=22)#average glucose level
+#shap.dependence_plot(22, shap_values, X, feature_names=X_features, interaction_index=20)#bmi
+##shap.decision_plot(explainer.expected_value, shap_values, X_features, ignore_warnings=True)
 
 
 
@@ -112,8 +111,16 @@ incorrect_explanation=0
 correct_prediction=True
 counter_correct_predictions=0
 counter_incorrect_predictions=0
+correct_prediction_correct_explanation=0
+correct_prediction_incorrect_explanation=0
+incorrect_prediction_correct_explanation=0
+incorrect_prediction_incorrect_explanation=0
     
+#i=666
+
 for i in range(len(dataset)):
+    tmp2=np.sum(shap_values[i]!= 0)
+    tmp=np.sum(shap_values[i][20:23] != 0)
     if (est.predict_proba([X[i]])[0, 1] ) >= 0.5:
         prediction='stroke'
     else:
@@ -122,30 +129,41 @@ for i in range(len(dataset)):
     if (prediction=='healthy') and (class_names[y[i]]=='healthy'):
         correct_prediction=True
         counter_correct_predictions=counter_correct_predictions+1
+        if tmp2 == 3 and tmp ==3:
+            correct_prediction_correct_explanation+=1
+            correct_explanation+=1
+        else:
+            correct_prediction_incorrect_explanation+=1   
+            incorrect_explanation+=1
     elif (prediction=='stroke') and (class_names[y[i]]=='stroke'):
         counter_correct_predictions=counter_correct_predictions+1
         correct_prediction=True
+        if tmp2 == 3 and tmp ==3:
+            correct_prediction_correct_explanation+=1
+            correct_explanation+=1
+        else:
+            correct_prediction_incorrect_explanation+=1  
+            incorrect_explanation+=1
     else:
         correct_prediction=False
         counter_incorrect_predictions=counter_incorrect_predictions+1
+        if tmp2 == 3 and tmp ==3:
+            incorrect_prediction_correct_explanation+=1
+            correct_explanation+=1
+        else:
+            incorrect_prediction_incorrect_explanation+=1  
+            incorrect_explanation+=1
         
-    tmp2=np.sum(shap_values[i]!= 0)
-    tmp=np.sum(shap_values[i][20:23] != 0)
-    if tmp2 == 3 and tmp ==3:
-        correct_explanation+=1
-    elif tmp2 > 3:
-        incorrect_explanation+=1      
-        print("*************************************************************")
-        print('Document id: %d' % i)
-        print('Probability(stroke) =', est.predict_proba([X[i]])[0, 1])
-        print('True class: %s' % class_names[y[i]])
-        print("*************************************************************")
-        #Lo de forzar es para casos individuales
-        #shap.force_plot(explainer.expected_value,shap_values[i,:], X[i,:], feature_names=X_features, matplotlib=True)
-        shap.plots._waterfall.waterfall_legacy(explainer.expected_value, shap_values[i,:], X[i,:], feature_names=X_features)
-        
-
     
+       
+    print("*************************************************************")
+    print('Document id: %d' % i)
+    print('Probability(stroke) =', est.predict_proba([X[i]])[0, 1])
+    print('True class: %s' % class_names[y[i]])
+    print("*************************************************************")
+    #Lo de forzar es para casos individuales
+    #shap.force_plot(explainer.expected_value,shap_values[i,:], X[i,:], feature_names=X_features, matplotlib=True)
+    #shap.plots._waterfall.waterfall_legacy(explainer.expected_value, shap_values[i,:], X[i,:], feature_names=X_features)
         
 print('correct prediction')
 print(counter_correct_predictions/len(dataset))
@@ -159,5 +177,17 @@ print('correct explanations')
 print(percentage_total_correct_explanations)
 print('incorrect explanations')
 print(percentage_total_incorrect_explanations)
-
+    
+        
+print('all')
+percentage_total_correct_explanations=correct_explanation/len(dataset)
+#percentage_total_correct_columns=correct_columns/(len(dataset)*3)
+print(percentage_total_correct_explanations)   
+#print(percentage_total_correct_columns) 
+print('correct prediction')
+print(correct_prediction_correct_explanation/counter_correct_predictions)
+#print(counter_columns_correct_predictions/(counter_correct_predictions*3))
+print('incorrect prediction')
+print(incorrect_prediction_correct_explanation/counter_incorrect_predictions)
+#print(counter_columns_incorrect_predictions/(counter_incorrect_predictions*3))
 
